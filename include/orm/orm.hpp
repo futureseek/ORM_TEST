@@ -11,4 +11,5 @@
 namespace orm {
 
 // 顶层简易导出
+inline constexpr const char ORM_VERSION[] = "0.1.0";
 }

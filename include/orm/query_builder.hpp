@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 
 namespace orm {
 
@@ -11,8 +12,11 @@ enum class Order { Asc, Desc };
 template<typename T>
 class QueryBuilder {
 public:
-    QueryBuilder& where(const char* member, Op op, const std::string& value);
-    QueryBuilder& orderBy(const char* member, Order o);
+    // member: pointer-to-member, e.g. &T::age
+    template<typename M>
+    QueryBuilder& where(M T::* member, Op op, const std::string& value);
+    template<typename M>
+    QueryBuilder& orderBy(M T::* member, Order o);
     QueryBuilder& limit(size_t n);
     std::vector<T> all();
     std::optional<T> one();
