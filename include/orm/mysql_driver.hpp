@@ -39,6 +39,6 @@ public:
 };
 
 // Factory helpers for mysqlcppconn-backed connection implementation
-std::shared_ptr<IConnection> createMysqlConnection(const std::string& conn_uri);
+std::shared_ptr<IConnection> createMysqlConnection(const std::string& conn_uri="tcp://127.0.0.1:3306");
 
 } // namespace orm

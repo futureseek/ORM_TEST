@@ -62,8 +62,8 @@ std::shared_ptr<IConnection> orm::createMysqlConnection(const std::string& conn_
         sql::mysql::MySQL_Driver *driver = sql::mysql::get_mysql_driver_instance();
         // conn_uri expected formats: "tcp://host:port" or "tcp://host:port;user;pass" or full jdbc-style
         std::string host = conn_uri;
-        std::string user = "";
-        std::string pass = "";
+        std::string user = "root";
+        std::string pass = "qwer0122";
         // simple parse: if contains ';' treat as host;user;pass
         size_t p1 = conn_uri.find(';');
         if (p1 != std::string::npos) {
