@@ -1,7 +1,9 @@
 add_library(orm_core STATIC
   connection_pool.cpp
   mysql_driver.cpp
-  # future implementation sources: session.cpp, query_builder.cpp, transaction.cpp
+  session.cpp
+  transaction.cpp
+  # future implementation sources:  query_builder.cpp
 )
 
 target_include_directories(orm_core PUBLIC

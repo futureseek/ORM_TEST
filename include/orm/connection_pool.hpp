@@ -14,7 +14,7 @@ public:
 
     static std::shared_ptr<ConnectionPool> createMysql(const std::string& conn_str, Options opts);
 
-    // RAII wrapper for a connection
+    /* RAII wrapper for a connection
     class Guard {
     public:
         Guard(std::shared_ptr<ConnectionPool> parent, std::shared_ptr<IConnection> conn);
@@ -25,9 +25,13 @@ public:
         std::shared_ptr<IConnection> conn_;
         std::shared_ptr<ConnectionPool> parent_;
     };
+    
 
     // 获取连接，超时则抛出 orm::DBException
     std::unique_ptr<Guard> get(std::chrono::milliseconds timeout = std::chrono::milliseconds{3000});
+    */
+
+    std::shared_ptr<IConnection> get(std::chrono::milliseconds timeout = std::chrono::milliseconds{3000});
 
 private:
     struct Impl;

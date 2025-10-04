@@ -4,6 +4,8 @@
 #include <optional>
 #include <vector>
 #include <type_traits>
+#include <chrono>
+#include "mysql_driver.hpp"
 
 namespace orm {
 
@@ -39,6 +41,8 @@ public:
 
     // 开始事务（返回 RAII Transaction）
     std::unique_ptr<Transaction> beginTransaction();
+
+    std::shared_ptr<IConnection> acquireConnection(std::chrono::milliseconds timeout = std::chrono::milliseconds{3000});
 
 private:
     struct Impl;

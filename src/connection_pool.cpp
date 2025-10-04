@@ -31,6 +31,37 @@ std::shared_ptr<ConnectionPool> ConnectionPool::createMysql(const std::string &c
     return p;
 }
 
+
+
+std::shared_ptr<IConnection> ConnectionPool::get(std::chrono::milliseconds timeout){
+    std::unique_lock<std::mutex> lock(impl_->mtx);
+    if (!impl_->cv.wait_for(lock, timeout, [this]() { return !impl_->pool.empty(); })) {
+        throw orm::DBException("Timeout waiting for connection");
+    }
+    auto sconn = impl_->pool.front();
+    impl_->pool.pop();
+    // 创建一个带 custom deleter 的 shared_ptr 返回给调用者。
+    // deleter 捕获弱引用到 ConnectionPool（通过 shared_from_this）和 sconn（被推回池中使用的 shared_ptr）
+    std::weak_ptr<ConnectionPool> weak_pool = shared_from_this();
+    std::shared_ptr<IConnection> client_ptr(
+        sconn.get(),
+        [weak_pool,sconn](IConnection*) mutable{
+            if(auto pool = weak_pool.lock()) {
+                std::lock_guard<std::mutex> lock(pool->impl_->mtx);
+                pool->impl_->pool.push(sconn);
+                pool->impl_->cv.notify_one();
+            }
+            else{
+                // 池已经销毁，sconn 会在 lambda 退出时释放
+            }
+        }
+    );
+    return client_ptr;
+}
+
+
+/*
+
 ConnectionPool::Guard::Guard(std::shared_ptr<ConnectionPool> parent, std::shared_ptr<IConnection> conn)
     : conn_(std::move(conn)), parent_(std::move(parent)) {}
 
@@ -55,3 +86,4 @@ std::unique_ptr<ConnectionPool::Guard> ConnectionPool::get(std::chrono::millisec
     impl_->pool.pop();
     return std::unique_ptr<Guard>(new Guard(shared_from_this(), conn));
 }
+*/
